@@ -1,8 +1,4 @@
-// This is your Prisma schema file,
-// learn more about it in the docs: https://pris.ly/d/prisma-schema
-
-// Looking for ways to speed up your queries, or scale easily with your serverless or edge functions?
-// Try Prisma Accelerate: https://pris.ly/cli/accelerate-init
+// PostgreSQL Prisma schema
 
 generator client {
   provider = "prisma-client"
@@ -10,7 +6,7 @@ generator client {
 }
 
 datasource db {
-  provider = "mongodb"
+  provider = "postgresql"
 }
 
 enum TaskStatus {
@@ -20,7 +16,7 @@ enum TaskStatus {
 }
 
 model Task {
-  id          String     @id @default(auto()) @map("_id") @db.ObjectId
+  id          Int        @id @default(autoincrement())
   title       String
   vehicleType String?
   status      TaskStatus @default(PENDING)
@@ -32,9 +28,9 @@ model Task {
 }
 
 model Step {
-  id String @id @default(auto()) @map("_id") @db.ObjectId
+  id Int @id @default(autoincrement())
 
-  taskId        String    @db.ObjectId
+  taskId        Int
   order         Int
   title         String
   description   String
