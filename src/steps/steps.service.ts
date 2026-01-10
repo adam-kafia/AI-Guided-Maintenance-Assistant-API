@@ -67,7 +67,7 @@ export class StepsService {
     if (await this.checkAllStepsCompleted(complete.taskId)) {
       await this.prisma.task.update({
         where: { id: complete.taskId },
-        data: { status: 'PENDING' },
+        data: { status: 'COMPLETED' },
       });
     }
     return complete;
@@ -88,10 +88,10 @@ export class StepsService {
     const task = await this.prisma.task.findUnique({
       where: { id: uncomplete.taskId },
     });
-    if (task?.status === 'PENDING') {
+    if (task?.status === 'COMPLETED') {
       await this.prisma.task.update({
         where: { id: uncomplete.taskId },
-        data: { status: 'PENDING' },
+        data: { status: 'STEPS_GENERATED' },
       });
     }
     return uncomplete;

@@ -23,7 +23,7 @@ export class TasksService {
     const task = await this.prisma.task.create({
       data: { title, vehicleType, status: 'PENDING' },
     });
-    const steps = await this.prisma.step.createMany({
+    await this.prisma.step.createMany({
       data: generatedSteps.map((step) => ({
         order: step.order,
         title: step.title,
@@ -33,7 +33,6 @@ export class TasksService {
       })),
       skipDuplicates: true,
     });
-    console.log(steps);
 
     return this.toTaskResponseDto(task);
   }

@@ -1,12 +1,7 @@
-import {
-  BadGatewayException,
-  Injectable,
-  InternalServerErrorException,
-} from '@nestjs/common';
+import { BadGatewayException, Injectable } from '@nestjs/common';
 import OpenAI from 'openai';
 import { GeneratedStep } from './types/generated-step.type';
 import { validateGeneratedSteps } from './types/generated-steps.validator';
-import { error } from 'console';
 
 @Injectable()
 export class AiService {

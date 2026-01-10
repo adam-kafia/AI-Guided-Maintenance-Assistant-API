@@ -22,7 +22,7 @@ export class StepsController {
   }
   @Get('task/:taskId')
   async getAllStepsForTask(
-    @Param('taskId') dto: FindAllStepsForTaskDto,
+    @Param() dto: FindAllStepsForTaskDto,
   ): Promise<GetAllStepsResponseDto[]> {
     return this.stepsService.findAllStepsForTask(dto);
   }
@@ -30,7 +30,7 @@ export class StepsController {
   async completeStep(@Param() dto: IdDto) {
     return this.stepsService.completeStep(dto);
   }
-  @Get('Uncomplete/:id')
+  @Get('uncomplete/:id')
   async uncompleteStep(@Param() dto: IdDto) {
     return this.stepsService.uncompleteStep(dto);
   }
