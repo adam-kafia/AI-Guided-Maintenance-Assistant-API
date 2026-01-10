@@ -1,4 +1,8 @@
-import { BadGatewayException, Injectable, InternalServerErrorException } from '@nestjs/common';
+import {
+  BadGatewayException,
+  Injectable,
+  InternalServerErrorException,
+} from '@nestjs/common';
 import OpenAI from 'openai';
 import { GeneratedStep } from './types/generated-step.type';
 import { validateGeneratedSteps } from './types/generated-steps.validator';
@@ -11,7 +15,6 @@ export class AiService {
   constructor() {
     this.openai = new OpenAI({
       apiKey: process.env.OPENAI_API_KEY,
-      
     });
   }
 
@@ -41,8 +44,7 @@ export class AiService {
             type: 'function',
             function: {
               name: 'generate_steps',
-              description:
-                'Generate ordered maintenance steps for a task.',
+              description: 'Generate ordered maintenance steps for a task.',
               parameters: {
                 type: 'object',
                 properties: {
@@ -76,7 +78,11 @@ export class AiService {
       const toolCall = response.choices[0]?.message?.tool_calls?.[0];
 
       // Narrow the union type returned by the SDK before accessing `function.arguments`
-      if (!toolCall || toolCall.type !== 'function' || !('function' in toolCall)) {
+      if (
+        !toolCall ||
+        toolCall.type !== 'function' ||
+        !('function' in toolCall)
+      ) {
         throw new Error('AI did not return a function tool call');
       }
 
@@ -91,7 +97,7 @@ export class AiService {
       return validateGeneratedSteps(parsed.steps);
     } catch (err) {
       // Important: never leak raw AI errors upward
-      console.log(err);
+      console.error('AI step generation error:', err);
       throw new BadGatewayException('AI step generation failed');
     }
   }
