@@ -1,97 +1,85 @@
- # AI-Guided Maintenance Assistant API
+# AI-Guided Maintenance Assistant API
 
-Backend API for an AI-powered maintenance assistant that generates clear, step-by-step repair instructions for vehicle owners.
+Backend API built with NestJS that generates structured, step-by-step vehicle maintenance workflows using OpenAI tool calling and strict server-side validation.
 
-This project demonstrates **clean backend architecture**, **controlled AI integration**, and **safe persistence of AI-generated data**.
+## Features
 
----
+- Create maintenance tasks and auto-generate ordered steps (6-12)
+- Validate AI output (schema, order, length limits) before persistence
+- Retrieve tasks and steps
+- Mark steps complete or uncomplete
+- Health endpoints for service and database checks
 
-## ✨ Features
+## Tech Stack
 
-- Create maintenance tasks (e.g. “Replace brake pads”)
-- Automatically generate 6–12 structured repair steps using AI
-- Strict validation of AI output before database persistence
-- Step completion tracking
-- Atomic database transactions (no partial writes)
-- Mock AI mode for local development (no API cost)
-- Clean NestJS module boundaries
+- Node.js + TypeScript
+- NestJS
+- Prisma ORM + PostgreSQL
+- OpenAI API (tool calling)
 
----
-
-## 🏗️ Tech Stack
-
-- **Node.js**
-- **NestJS**
-- **Prisma ORM**
-- **PostgreSQL**
-- **OpenAI API** (function calling)
-- **TypeScript**
-
----
-
-## 📁 Project Structure
+## Project Structure
 
 ```
 src/
-├── ai/              # AI integration (isolated, validated)
-│   ├── ai.service.ts
-│   ├── types/
-│   └── validators/
-├── tasks/           # Task creation + AI orchestration
-├── steps/           # Step listing & completion
-├── prisma/          # Prisma service & schema
-├── common/          # Shared errors & utilities
-└── main.ts
+  ai/           OpenAI integration and output validation
+  health/       Health endpoints
+  prisma/       Prisma service
+  steps/        Step endpoints and completion logic
+  tasks/        Task creation and AI orchestration
+  generated/    Prisma client output
 ```
 
----
+## Requirements
 
-## 🚀 Getting Started
+- Node.js 18+
+- PostgreSQL
+- OpenAI API key
+
+## Setup
 
 ### 1) Install dependencies
+
 ```bash
 npm install
 ```
 
-### 2) Set up environment variables
-Create a `.env` file:
+### 2) Configure environment
+
+Create a `.env` file in the project root:
 
 ```env
 DATABASE_URL=postgresql://user:password@localhost:5432/maintenance_db
 OPENAI_API_KEY=sk-xxxx
-AI_MODE=mock
+PORT=3000
 ```
 
-> `AI_MODE=mock` allows development without OpenAI billing.
-
----
-
 ### 3) Apply database schema
+
 ```bash
 npx prisma migrate dev
 npx prisma generate
 ```
 
----
-
 ### 4) Run the server
+
 ```bash
 npm run start:dev
 ```
 
-Server will start on:
+Server starts on:
+
 ```
 http://localhost:3000
 ```
 
----
+## API Endpoints
 
-## 📌 API Overview
+### Tasks
 
-### Create Task (AI generates steps)
-```
-POST /tasks
-```
+- `POST /tasks` - Create task and generate steps
+- `GET /tasks/:id` - Fetch a task by id
+
+Example request:
 
 ```json
 {
@@ -100,74 +88,39 @@ POST /tasks
 }
 ```
 
----
+### Steps
 
-### Get Task
-```
-GET /tasks/:id
-```
+- `GET /steps/task/:taskId` - List all steps for a task
+- `GET /steps/:id` - Fetch a step by id
+- `GET /steps/complete/:id` - Mark a step complete
+- `GET /steps/uncomplete/:id` - Mark a step uncomplete
+- `GET /steps/init` - Seed two demo steps (development helper)
 
----
+### Health
 
-### List Steps
-```
-GET /tasks/:id/steps
-```
+- `GET /health` - Basic health check
+- `GET /health/db` - Database connectivity check
 
----
+## AI Safety and Validation
 
-### Complete Step
-```
-POST /tasks/:id/steps/:stepId/complete
-```
+The AI integration is isolated to `src/ai` and never writes directly to the database. AI output is validated before any persistence:
 
----
+- 6-12 steps required
+- Strict step ordering (1..n)
+- Title length 3-80 characters
+- Description length 20-500 characters
+- Optional safety warning length <= 160 characters
 
-## 🤖 AI Design (Important)
+Invalid AI responses are rejected and surfaced as a `BadGatewayException`.
 
-AI integration is **fully isolated** from business logic:
+## Scripts
 
-- AI returns **data only**, never decisions
-- All AI output is:
-  - Schema validated
-  - Length constrained
-  - Order enforced
-- Invalid AI responses are rejected and **never persisted**
+- `npm run start:dev` - Start dev server with watch mode
+- `npm run build` - Build for production
+- `npm run start:prod` - Run compiled app
+- `npm run lint` - Lint and fix
+- `npm run test` - Unit tests
 
-### AI Modes
+## License
 
-| Mode | Behavior |
-|------|---------|
-| `mock` | Deterministic steps for local development |
-| `real` | OpenAI function calling |
-
----
-
-## 🛡️ Data Safety & Consistency
-
-- AI generation + DB writes are wrapped in a **single transaction**
-- Either **everything succeeds** or **nothing is written**
-- Prevents partial or corrupted state
-
----
-
-## 🧪 Testing Strategy (Minimal MVP)
-
-- Core service logic tested
-- AI validator tested independently
-- Endpoints verified manually (Postman)
-
----
-
-## 📌 Roadmap
-
-- Authentication
-- User-specific task history
-- Async AI generation
-- WebSocket progress updates
-
----
-
-## 📄 License
-
-MIT License
+UNLICENSED
