@@ -14,9 +14,9 @@ export class HealthController {
   @Get('db')
   @HttpCode(200)
   async getDatabaseHealth(): Promise<any> {
-    const stepCount = await this.prisma.step.count();
-    const res =  stepCount !== undefined
-      ? { database: 'connected', stepCount }
+    const taskCount = await this.prisma.task.count();
+    const res =  taskCount !== undefined
+      ? { database: 'connected', taskCount }
       : { database: 'disconnected' };
 
     return res;

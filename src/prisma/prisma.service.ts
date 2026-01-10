@@ -12,7 +12,7 @@ export class PrismaService
   implements OnModuleInit, OnApplicationShutdown
 {
   constructor() {
-    const adapter = new PrismaPg({ connectionString: process.env.DATABASE_URL });
+    const adapter = new PrismaPg({ connectionString: process.env.DATABASE_URL as string });
     super({ adapter });
   }
   async onModuleInit() {
